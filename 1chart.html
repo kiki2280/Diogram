@@ -214,7 +214,7 @@
 
 
         /* ===================================================
-   📱 FULL RESPONSIVE ADAPTIVE (2×2 cards + 300px blocks)
+    FULL RESPONSIVE ADAPTIVE 
    =================================================== */
 
 @media (max-width: 768px) {
@@ -224,7 +224,6 @@
         padding: 10px;
     }
 
-    /* ⭐ Верхние карточки — 2×2 */
     .top-cards {
         display: grid !important;
         grid-template-columns: repeat(2, 128px);
@@ -237,44 +236,25 @@
         height: 100px;
     }
 
-    /* ⭐ Основная колонка */
     .main-area {
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 0px;
     }
 
-    /* ⭐ График — 300px */
     .chart-box {
-        width: 300px !important;
+        width: 270px !important;
         padding: 12px;
     }
 
-    /* ⭐ side-panel — теперь ТАКОГО ЖЕ размера как chart-box */
     .side-panel {
-        width: 300px !important;
+        width: 270px !important;
         height: auto;
         margin-top: 10px;
         align-self: center;
     }
 }
 
-/* ------------------------------------------------------
-   📱 Очень маленькие экраны (<480px)
-   ------------------------------------------------------ */
-@media (max-width: 480px) {
-
-
-    /* График еще компактнее */
-    .chart-box {
-        width: 260px !important;
-    }
-
-    /* side-panel также уменьшается */
-    .side-panel {
-        width: 260px !important;
-    }
-}
 
     </style>
 </head>

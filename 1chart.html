@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        
+        body {
+            background: #0f1119;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Также можно дополнительно для body */
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+
+        ul {
+            list-style: none; /* убирает точки */
+            padding: 0;       /* убирает отступ слева */
+            margin: 0;        /* убирает внешние отступы */
+        }
+
+        h2, .h2 {
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        h3, .h3  {
+            font-weight: 400;
+            font-size: 10px;
+        }
+
+        h4, .h4 {
+            font-weight: 500;
+            font-size: 8px;
+        }
+
+        h5, .h5 {
+            font-weight: 500;
+            font-size: 6px;
+        }
+
+        .grey-bg {
+            background-color: rgba(189, 189, 191, 0.6);
+        }
+
+        .dashboard {
+            width: 600px;
+            height: 500px;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-cards {
+            display: flex;
+            gap: 19px;
+        }
+
+        .card-svg {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 12px;
+            justify-content: space-between;
+        }
+
+        .card-frame {
+            display: flex;
+            align-items: center;
+            margin-top: 11px;
+            margin-bottom: 13px;
+            gap: 3px;
+
+        }
+
+        .svg-card2 {
+            margin-top: 4px;
+        }
+
+        .card {
+            width: 128px;
+            height: 100px;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: left;
+            border: 0.5px solid rgba(255, 255, 255, 0.2);
+
+            background: radial-gradient(circle at top,    rgba(255, 255, 255, 0.1), rgba(15, 17, 29, 1)),
+            radial-gradient(circle at bottom, rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1)),
+            radial-gradient(circle at left,   rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1)),
+            radial-gradient(circle at right,  rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1));
+            background-blend-mode: lighten;
+        }
+
+        .card h2 {
+            margin: 0;
+        }
+
+        .card p {
+            margin-top: 6px;
+            
+        }
+
+        .main-area {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* График */
+        .chart-box {
+            width: 366px;
+            border-radius: 12px;
+            padding: 16px 16px 0px 16px;
+            border: 0.5px solid rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle at top,    rgba(255, 255, 255, 0.1), rgba(15, 17, 29, 1)),
+            radial-gradient(circle at bottom, rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1)),
+            radial-gradient(circle at left,   rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1)),
+            radial-gradient(circle at right,  rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1));
+            background-blend-mode: lighten;
+        }
+
+        .chart-text {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .chart-text2 {
+            gap: 5px;
+            display: flex;
+            margin-bottom: 16px;
+            align-items: center;
+        }
+        
+        
+        .title-btn {
+            padding: 2px 14px;
+        border-radius: 11px;
+        background-color: rgba(244, 244, 244, 0.1);
+        border: 0.3px solid #FFFFFF;
+        }
+
+        
+
+        /* Правая боковая секция */
+        .side-panel {
+            display: flex;
+            width: 185px;
+            height: 286px;
+            border-radius: 12px;
+            padding: 10px;
+            border: 0.5px solid rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle at top, rgba(255, 255, 255, 0.1), rgba(15, 17, 29, 1)), radial-gradient(circle at bottom, rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1)), radial-gradient(circle at left, rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1)), radial-gradient(circle at right, rgba(53, 52, 52, 0.1), rgba(15, 17, 29, 1));
+            background-blend-mode: lighten;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .title {
+        display: flex;
+        justify-content: space-between;
+        margin: 13px 0;
+        }
+
+        .title-text {
+            padding-right: 31px;
+        }
+
+        .title-container {
+            display: flex;
+        }
+
+        .side-panel-container-t {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 7px;
+
+        }
+
+        .side-panel-container-text {
+            max-width: 46px;
+        }
+
+        .btn {
+            min-width: 38px;
+            display: flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 11px;
+            color: rgba(1, 74, 229, 1);
+            background-color: rgba(1, 74, 229, 0.1);
+            justify-content: center;
+        }
+
+
+    /* ============================================
+   АДАПТИВ: уменьшение всей секции целиком
+   ============================================ */
+
+/* Планшеты */
+@media (max-width: 1024px) {
+    .dashboard {
+        transform: scale(0.85);
+        transform-origin: top center;
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Небольшие телефоны */
+@media (max-width: 768px) {
+    .dashboard {
+        transform: scale(0.72);
+        transform-origin: top center;
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Маленькие телефоны */
+@media (max-width: 480px) {
+    .dashboard {
+        transform: scale(0.60);
+        transform-origin: top center;
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Очень маленькие */
+@media (max-width: 360px) {
+    .dashboard {
+        transform: scale(0.50);
+        transform-origin: top center;
+        width: 100%;
+        height: auto;
+    }
+}
+/* Планшеты */
+@media (max-width: 1024px) {
+    h2, .h2 {
+        font-size: 18px;
+    }
+}
+
+/* Телефоны */
+@media (max-width: 768px) {
+    h2, .h2 {
+        font-size: 16px;
+    }
+}
+
+/* Маленькие телефоны */
+@media (max-width: 480px) {
+    h2, .h2 {
+        font-size: 14px;
+    }
+}
+
+/* Очень маленькие */
+@media (max-width: 360px) {
+    h2, .h2 {
+        font-size: 12px;
+    }
+}
+
+
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+
+        <!-- Верхние карточки -->
+        <div class="top-cards">
+            <div class="card ">
+                <div class="card-svg">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_221_5)">
+                            <path
+                                d="M13.976 8.00029C13.976 4.69984 11.3005 2.02429 8 2.02429C4.69955 2.02429 2.024 4.69984 2.024 8.00029C2.024 11.3008 4.69955 13.9763 8 13.9763C11.3005 13.9763 13.976 11.3008 13.976 8.00029ZM15.304 8.00029C15.304 12.0342 12.0339 15.3043 8 15.3043C3.96611 15.3043 0.695999 12.0342 0.695999 8.00029C0.695999 3.9664 3.96611 0.696289 8 0.696289C12.0339 0.696289 15.304 3.9664 15.304 8.00029Z"
+                                fill="white" />
+                            <path
+                                d="M9.9894 7.78502C9.94186 5.80435 9.23928 3.90025 7.99999 2.36666C6.71588 3.95574 6.00799 5.94265 6.00799 8.00029L6.01059 8.21556C6.05812 10.1961 6.7609 12.0998 7.99999 13.6333C9.2839 12.0442 9.99199 10.0578 9.99199 8.00029L9.9894 7.78502ZM11.3167 8.24796C11.2553 10.8013 10.2466 13.2443 8.48113 15.0981C8.35583 15.2297 8.18173 15.3043 7.99999 15.3043C7.81826 15.3043 7.64416 15.2297 7.51886 15.0981C5.75342 13.2443 4.74465 10.8013 4.68323 8.24796L4.67999 8.00029C4.67999 5.35765 5.6964 2.81618 7.51886 0.902494L7.56813 0.855802C7.68785 0.7533 7.8409 0.696289 7.99999 0.696289C8.18173 0.696289 8.35583 0.770903 8.48113 0.902494C10.3036 2.81618 11.32 5.35765 11.32 8.00029L11.3167 8.24796Z"
+                                fill="white" />
+                            <path
+                                d="M14.64 7.33594C15.0067 7.33594 15.304 7.63321 15.304 7.99994C15.304 8.36666 15.0067 8.66394 14.64 8.66394L1.36 8.66394C0.993285 8.66394 0.695999 8.36666 0.695999 7.99994C0.695999 7.63321 0.993285 7.33594 1.36 7.33594L14.64 7.33594Z"
+                                fill="white" />
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_221_5">
+                                <rect width="16" height="16" fill="white" />
+                            </clipPath>
+                        </defs>
+                    </svg>
+                    <p class="h4">Overall Mentions</p>
+                </div>
+                <h2>1.2M</h2>
+                <div class="card-frame">
+                    <svg class="svg-card2" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5.34023 5.67523L5.34023 2.66023L2.32523 2.66023C2.14022 2.66023 1.99023 2.51025 1.99023 2.32523C1.99023 2.14022 2.14022 1.99023 2.32523 1.99023L5.67523 1.99023L5.70957 1.99187C5.87848 2.00906 6.01023 2.15181 6.01023 2.32523L6.01023 5.67523C6.01023 5.86025 5.86025 6.01023 5.67523 6.01023C5.49021 6.01023 5.34023 5.86025 5.34023 5.67523Z"
+                            fill="white" />
+                        <path
+                            d="M5.46388 2.0654C5.59546 1.95808 5.78943 1.96565 5.91207 2.0883C6.03472 2.21095 6.04229 2.40492 5.93495 2.53649L5.91207 2.56201L2.56207 5.912C2.43124 6.04285 2.21918 6.04285 2.08836 5.912C1.95753 5.78118 1.95753 5.56913 2.08836 5.43831L5.43835 2.0883L5.46388 2.0654Z"
+                            fill="white" />
+                    </svg>
+                    <p class="h3">+15%</p>
+                </div>
+            </div>
+            <div class="card ">
+                <div class="card-svg">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.83 9.9L4.60333 8V4.66667C4.60333 3.19333 5.81933 2 7.32067 2C8.252 2 9.074 2.46 9.564 3.16067"
+                            stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path
+                            d="M6.39999 12.7865C6.65057 13.161 6.98986 13.4677 7.38765 13.6794C7.78543 13.8911 8.22939 14.0012 8.67999 13.9998C10.18 13.9998 11.3973 12.8065 11.3973 11.3331V7.99979L8.10666 6.06445"
+                            stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path
+                            d="M6.30133 9.0002V5.11353L9.24266 3.44687C10.5427 2.7102 12.2047 3.14687 12.9553 4.4222C13.1852 4.81099 13.3107 5.25262 13.3196 5.7042C13.3284 6.15579 13.2204 6.602 13.006 6.99953"
+                            stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path
+                            d="M2.99332 9.00025C2.77879 9.39772 2.67066 9.8439 2.67942 10.2955C2.68818 10.7471 2.81354 11.1887 3.04332 11.5776C3.79399 12.8529 5.45665 13.2896 6.75665 12.5536L9.69799 10.8869L9.76199 7.15625"
+                            stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path
+                            d="M11.3973 11.7533C11.8517 11.7357 12.2945 11.6047 12.6854 11.3723C13.0763 11.1399 13.4028 10.8134 13.6353 10.4226C14.386 9.14728 13.9407 7.51595 12.6407 6.77995L9.69866 5.11328L6.32599 6.94995"
+                            stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path
+                            d="M4.60333 4.24707C4.1488 4.26454 3.70587 4.39544 3.31486 4.62786C2.92386 4.86027 2.59721 5.18681 2.36466 5.57774C1.614 6.85374 2.05933 8.4844 3.35933 9.2204L6.30133 10.8871L9.66666 9.05374"
+                            stroke="white" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <p class="h4">ChatGPT Mentions</p>
+                </div>
+                <h2>520K</h2>
+                <div class="card-frame">
+                    <svg class="svg-card2" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5.34023 5.67523L5.34023 2.66023L2.32523 2.66023C2.14022 2.66023 1.99023 2.51025 1.99023 2.32523C1.99023 2.14022 2.14022 1.99023 2.32523 1.99023L5.67523 1.99023L5.70957 1.99187C5.87848 2.00906 6.01023 2.15181 6.01023 2.32523L6.01023 5.67523C6.01023 5.86025 5.86025 6.01023 5.67523 6.01023C5.49021 6.01023 5.34023 5.86025 5.34023 5.67523Z"
+                            fill="white" />
+                        <path
+                            d="M5.46388 2.0654C5.59546 1.95808 5.78943 1.96565 5.91207 2.0883C6.03472 2.21095 6.04229 2.40492 5.93495 2.53649L5.91207 2.56201L2.56207 5.912C2.43124 6.04285 2.21918 6.04285 2.08836 5.912C1.95753 5.78118 1.95753 5.56913 2.08836 5.43831L5.43835 2.0883L5.46388 2.0654Z"
+                            fill="white" />
+                    </svg>
+                    <p class="h3">+12%</p>
+                </div>
+            </div>
+            <div class="card ">
+                <div class="card-svg">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g clip-path="url(#clip0_221_57)">
+                            <path
+                                d="M16 8.016C11.7087 8.27467 8.27333 11.7087 8.01533 16H7.984C7.72533 11.7087 4.29067 8.27467 0 8.016V7.98467C4.29133 7.72533 7.72533 4.29133 7.984 0H8.01533C8.274 4.29133 11.7087 7.72533 16 7.98467V8.016Z"
+                                fill="white"></path>
+                        </g>
+                        <defs>
+                            <clipPath id="clip0_221_57">
+                                <rect width="16" height="16" fill="white"></rect>
+                            </clipPath>
+                        </defs>
+                    </svg>
+                    <p class="h4">Gemini Mentions</p>
+                </div>
+                <h2>380K</h2>
+                <div class="card-frame">
+                    <svg class="svg-card2" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5.34023 5.67523L5.34023 2.66023L2.32523 2.66023C2.14022 2.66023 1.99023 2.51025 1.99023 2.32523C1.99023 2.14022 2.14022 1.99023 2.32523 1.99023L5.67523 1.99023L5.70957 1.99187C5.87848 2.00906 6.01023 2.15181 6.01023 2.32523L6.01023 5.67523C6.01023 5.86025 5.86025 6.01023 5.67523 6.01023C5.49021 6.01023 5.34023 5.86025 5.34023 5.67523Z"
+                            fill="white" />
+                        <path
+                            d="M5.46388 2.0654C5.59546 1.95808 5.78943 1.96565 5.91207 2.0883C6.03472 2.21095 6.04229 2.40492 5.93495 2.53649L5.91207 2.56201L2.56207 5.912C2.43124 6.04285 2.21918 6.04285 2.08836 5.912C1.95753 5.78118 1.95753 5.56913 2.08836 5.43831L5.43835 2.0883L5.46388 2.0654Z"
+                            fill="white" />
+                    </svg>
+                    <p class="h3">+8%</p>
+                </div>
+            </div>
+            <div class="card ">
+                <div class="card-svg">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.82336 1.33301L7.62002 4.83101V1.34101H8.35936V4.84701L12.1727 1.33301V5.32167H13.7387V11.0743H12.1774V14.6257L8.35936 11.271V14.6643H7.61936V11.3263L3.82802 14.6663V11.0743H2.26202V5.32101H3.82336V1.33301ZM7.06336 6.05167H3.00002V10.3443H3.82669V8.99034L7.06336 6.05167ZM4.56669 9.31434V13.0377L7.62002 10.3483V6.53967L4.56669 9.31434ZM8.38002 10.3123L11.4387 12.999V11.0743H11.4347V9.31034L8.38002 6.53701V10.3123ZM12.1774 10.3443H13V6.05101H8.96869L12.178 8.95967L12.1774 10.3443ZM11.434 5.32167V3.01234L8.92736 5.32167H11.434ZM7.06869 5.32167L4.56202 3.01234V5.32167H7.06869Z"
+                            fill="white"></path>
+                    </svg>
+                    <p class="h4">Perplexity Mentions</p>
+                </div>
+                <h2>300K</h2>
+                <div class="card-frame">
+                    <svg class="svg-card2" width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5.34023 5.67523L5.34023 2.66023L2.32523 2.66023C2.14022 2.66023 1.99023 2.51025 1.99023 2.32523C1.99023 2.14022 2.14022 1.99023 2.32523 1.99023L5.67523 1.99023L5.70957 1.99187C5.87848 2.00906 6.01023 2.15181 6.01023 2.32523L6.01023 5.67523C6.01023 5.86025 5.86025 6.01023 5.67523 6.01023C5.49021 6.01023 5.34023 5.86025 5.34023 5.67523Z"
+                            fill="white" />
+                        <path
+                            d="M5.46388 2.0654C5.59546 1.95808 5.78943 1.96565 5.91207 2.0883C6.03472 2.21095 6.04229 2.40492 5.93495 2.53649L5.91207 2.56201L2.56207 5.912C2.43124 6.04285 2.21918 6.04285 2.08836 5.912C1.95753 5.78118 1.95753 5.56913 2.08836 5.43831L5.43835 2.0883L5.46388 2.0654Z"
+                            fill="white" />
+                    </svg>
+                    <p class="h3">+5%</p>
+                </div>
+            </div>
+            
+            
+        </div>
+
+        <!-- Основная зона -->
+        <div class="main-area">
+
+            <!-- График -->
+            <div class="chart-box">
+                <div class="chart-title">
+                    <p class="chart-text">Visibility Score</p>
+                    <div class="chart-text2">
+                        <p class="h3">Current:
+                            <div class="title-btn h3">350 (+10% from last month)</div>
+                        </p>
+                    </div>
+                </div>
+                <canvas id="visibilityChart"></canvas>
+                <div class="chart-legend"
+                    style="display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 4px;">
+                    <div style="width: 8px; height: 8px; background-color: #3DA8F5; border-radius: 2px;"></div>
+                    <span style="font-size: 8px; color: #FFFFFF;">Visibility Score</span>
+                </div>
+            </div>
+
+            <!-- Секция справа -->
+            <div class="side-panel">
+                <p class="h3">Top Performing Content</p>
+                <p class="h4">Content driving most AI visibility</p>
+                <div class="title">
+                    <p class="title-text h5">Title</p>
+                        <p class="h5">Platform</p>
+                        <p class="h5">Mentions</p>
+                        <p class="h5">Influence</p>
+                </div>
+                <ul class="side-panel-container">
+                    <li>
+                        <div class="side-panel-container-t">
+                            <p class=" side-panel-container-text h5">Global Warming Awareness</p>
+                            <div class="btn h5">ChatGPT</div>
+                            <p class="h5">15,200</p>
+                            <p class="h5">8.9</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="side-panel-container-t grey-bg">
+                            <p class="side-panel-container-text h5">Water Scarcity Solutions</p>
+                            <div class="btn h5">Gemini</div>
+                            <p class="h5">11,800</p>
+                            <p class="h5">8.5</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="side-panel-container-t">
+                            <p class="side-panel-container-text h5">Community Empowerment Projects</p>
+                            <div class="btn h5">Perplexity</div>
+                            <p class="h5">9,500</p>
+                            <p class="h5">7.2</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="side-panel-container-t grey-bg">
+                            <p class="side-panel-container-text h5">Youth Education Initiative</p>
+                            <div class="btn h5">ChatGPT</div>
+                            <p class="h5">8,100</p>
+                            <p class="h5">7.2</p>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="side-panel-container-t">
+                            <p class="side-panel-container-text h5">Wildlife Conservation Efforts</p>
+                            <div class="btn h5">Gemini</div>
+                            <p class="h5">7,300</p>
+                            <p class="h5">7</p>
+                        </div>
+                    </li>
+                    
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+    const ctx = document.getElementById('visibilityChart').getContext('2d');
+
+    // Плагин для пунктирной сетки по Y
+    const dashedYGridPlugin = {
+        id: 'dashedYGrid',
+        beforeDraw: (chart) => {
+            const ctx = chart.ctx;
+            const yAxis = chart.scales.y;
+            ctx.save();
+            ctx.setLineDash([5, 5]); // 5px линия, 5px пробел
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)'; // цвет сетки
+            yAxis.ticks.forEach((tick, index) => {
+                const y = yAxis.getPixelForTick(index);
+                ctx.beginPath();
+                ctx.moveTo(chart.chartArea.left, y);
+                ctx.lineTo(chart.chartArea.right, y);
+                ctx.stroke();
+            });
+            ctx.restore();
+        }
+    };
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+            datasets: [{
+                label: 'Visibility Score',
+                data: [10, 90, 60, 150, 180, 270],
+                borderColor: '#3DA8F5',
+                borderWidth: 2,
+                pointRadius: 0,
+                fill: false,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true, // чтобы график помещался в контейнер
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    ticks: { color: '#FFFFFF', font: { size: 10 } },
+                    grid: { display: false }
+                },
+                y: {
+                    min: 0,
+                    max: 360,
+                    ticks: { color: '#FFFFFF', font: { size: 10 }, stepSize: 90 },
+                    grid: { display: false } // отключаем стандартную сетку
+                }
+            }
+        },
+        plugins: [dashedYGridPlugin] // добавляем наш плагин
+    });
+</script>
+
+
+</body>
+
+</html>  

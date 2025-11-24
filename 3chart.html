@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Donor Analytics Section</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #050816 0%, #02030a 45%, #020817 100%);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", Arial, sans-serif;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Вся секция */
+        .analytics-layout {
+            width: 1040px;
+            height: 640px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .analytics-inner {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Колонки карточек */
+        .cards-column {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            z-index: 3; /* чтобы быть поверх центрального блока */
+        }
+
+        .cards-column.left {
+            margin-right: -30px; /* заход на центр-панель */
+        }
+
+        .cards-column.right {
+            margin-left: -60px;  /* заход на центр-панель */
+        }
+
+        /* Карточка */
+        .side-card {
+            min-width: 210px;
+            padding: 16px;
+            border-radius: 18px;
+
+            /* фон карточки */
+            background: linear-gradient(
+                291.11deg,
+                rgba(1, 72, 222, 0.6) 2.47%,
+                rgba(3, 3, 6, 0.4) 93.57%
+            );
+
+            /* рамка как у диаграммы */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .side-card-title {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+
+        .side-card-main {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .side-card-unit {
+            font-size: 14px;
+            margin-left: 4px;
+        }
+
+        .side-card-sub {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 6px;
+        }
+
+        .side-card-growth {
+            font-size: 11px;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .side-card-growth span.value {
+            font-weight: 600;
+            margin-bottom: -6px;
+        }
+
+        /* Стрелочка в карточках */
+        .stat-arrow {
+            width: 10px;
+            height: 10px;
+            display: inline-block;
+            border-right: 2px solid #3dffb0;
+            border-top: 2px solid #3dffb0;
+            transform: rotate(-45deg);
+            border-radius: 1px;
+        }
+
+        /* ЦЕНТРАЛЬНЫЙ БЛОК */
+        .center-panel {
+            position: relative;
+            width: 426px;
+            height: 551px;
+            padding: 28px 32px 24px 32px;
+            overflow: hidden;
+            border-radius: 22px;
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 0) 85.31%,
+                    rgba(255, 255, 255, 0.1) 131%
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0) 86.72%,
+                    rgba(255, 255, 255, 0.1) 121.09%
+                ),
+                linear-gradient(
+                    346.8deg,
+                    rgba(1, 74, 229, 0.144) -0.1%,
+                    rgba(61, 168, 245, 0.09) 44.14%,
+                    rgba(141, 207, 255, 0.009) 85.11%
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(255, 255, 255, 0.1) -30.86%,
+                    rgba(255, 255, 255, 0) 19.9%
+                );
+        }
+
+        .center-header-main {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-align: center;
+            background: linear-gradient(262.93deg, #ffffff -8.29%, #4d68a1 99.45%);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .center-header-sub {
+            font-size: 11px;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        .donut-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 40px auto 18px auto;
+        }
+
+        #donutChart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Текст внутри donut */
+        .donut-center-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .donut-main {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .donut-subline {
+            font-size: 11px;
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+
+        .donut-change {
+            font-size: 11px;
+            margin-top: 4px;
+            color: #f5f5f5; /* как ты просила */
+        }
+
+        /* Легенда под диаграммой */
+        .donor-legend {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 11px;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .legend-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .legend-percent {
+            opacity: 0.85;
+        }
+
+
+       /* ===========================
+   АДАПТИВ
+   =========================== */
+
+/* ===========================
+   📌 ПЛАНШЕТЫ (до 1024px)
+   =========================== */
+@media (max-width: 1024px) {
+
+    .analytics-layout {
+        width: 100%;
+        height: auto;
+        padding: 20px 0;
+    }
+
+    .analytics-inner {
+        flex-direction: column;
+        gap: 40px;
+        align-items: center;
+    }
+
+    /* Левая и правая колонка больше НЕ заходят на диаграмму */
+    .cards-column.left,
+    .cards-column.right {
+        margin: 0 !important; 
+    }
+
+    /* Карточки выстраиваются в ряд, если хватает ширины */
+    .cards-column {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        z-index: 3;
+    }
+
+    .side-card {
+        min-width: 210px;
+    }
+
+    /* Центр */
+    .center-panel {
+        margin-top: 20px;
+    }
+}
+
+
+/* ===========================
+   📱 МОБИЛЬНЫЕ (до 640px)
+   =========================== */
+@media (max-width: 640px) {
+
+    body {
+        padding: 20px;
+    }
+
+    .analytics-layout {
+        width: 100%;
+        height: auto;
+    }
+
+    .analytics-inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+    }
+
+    /* 🔥 ВСЕ КАРТОЧКИ СТРОГО ОДНА ПОД ДРУГОЙ */
+    .cards-column {
+        flex-direction: column !important;
+        width: 100%;
+        align-items: center;
+        gap: 16px;
+        margin: 0 !important;
+        transform: none !important;
+    }
+
+    /* Снять отрицательные отступы левого/правого столбца */
+    .cards-column.left,
+    .cards-column.right {
+        margin: 0 !important;
+    }
+
+    /* Карточка — растягивается, как в дизайне */
+    .side-card {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    /* Центральная панель 100% */
+    .center-panel {
+        width: 100%;
+        max-width: 360px;
+        height: auto;
+        padding: 20px;
+    }
+
+    .donut-wrapper {
+        width: 220px;
+        height: 220px;
+        margin: 30px auto 12px auto;
+    }
+
+    .donut-main {
+        font-size: 26px;
+    }
+
+    .center-header-main {
+        font-size: 16px;
+    }
+
+    .center-header-sub {
+        font-size: 10px;
+    }
+
+    .legend-row span {
+        font-size: 10px;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+
+<div class="analytics-layout">
+    <div class="analytics-inner">
+
+        <!-- ЛЕВАЯ КОЛОНКА -->
+        <div class="cards-column left">
+            <div class="side-card">
+                <div class="side-card-title">Avg. Session Duration</div>
+                <div class="side-card-main">
+                    4:38<span class="side-card-unit">min</span>
+                </div>
+                <div class="side-card-growth">
+                    <span class="value">↑ +42%</span>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-title">Bounce Rate</div>
+                <div class="side-card-main">29.8%</div>
+                <div class="side-card-growth">
+                    <span class="value" style="color:#ff9c9c;">↓ −18.4 points</span>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-title">Volunteer Applications</div>
+                <div class="side-card-main">$0.42</div>
+                <div class="side-card-sub">vs $28–$67 via paid ads</div>
+            </div>
+        </div>
+
+        <!-- ЦЕНТР -->
+        <div class="center-panel">
+            <div class="center-header-main">Where New Donors Come From</div>
+            <div class="center-header-sub">(Last 12 months – average across nonprofit clients)</div>
+
+            <div class="donut-wrapper">
+                <canvas id="donutChart"></canvas>
+
+                <div class="donut-center-text">
+                    <div class="donut-main">2,847</div>
+                    <div class="donut-subline">New recurring donors</div>
+                    <div class="donut-change">↑ +189%</div>
+                </div>
+            </div>
+
+            <div class="donor-legend">
+                <div class="legend-row">
+                    <div class="legend-left">
+                        <span class="legend-dot" style="background:#0f7cff;"></span>
+                        <span>Organic Search</span>
+                    </div>
+                    <span class="legend-percent">68%</span>
+                </div>
+
+                <div class="legend-row">
+                    <div class="legend-left">
+                        <span class="legend-dot" style="background:#3dabf5;"></span>
+                        <span>Direct & Brand Search</span>
+                    </div>
+                    <span class="legend-percent">17%</span>
+                </div>
+
+                <div class="legend-row">
+                    <div class="legend-left">
+                        <span class="legend-dot" style="background:#8dcfff;"></span>
+                        <span>Referral & Partners</span>
+                    </div>
+                    <span class="legend-percent">9%</span>
+                </div>
+
+                <div class="legend-row">
+                    <div class="legend-left">
+                        <span class="legend-dot" style="background:#cfe5ff;"></span>
+                        <span>Social Media</span>
+                    </div>
+                    <span class="legend-percent">6%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА -->
+        <div class="cards-column right">
+            <div class="side-card">
+                <div class="side-card-title">Donations from Organic Search</div>
+                <div class="side-card-main">$187,420</div>
+                <div class="side-card-growth">
+                    <span class="value">↑ +314%</span>
+                    <span class="side-card-sub">(last 12 months)</span>
+                </div>
+            </div>
+
+            <div class="side-card">
+                <div class="side-card-title">Volunteer Applications</div>
+                <div class="side-card-main">1,940</div>
+                <div class="side-card-growth">
+                    <span class="value">× 10.5</span>
+                    <span class="side-card-sub">growth after SEO</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const donutCtx = document.getElementById("donutChart");
+
+    new Chart(donutCtx, {
+        type: "doughnut",
+        data: {
+            labels: [
+                "Organic Search",
+                "Direct & Brand Search",
+                "Referral & Partners",
+                "Social Media"
+            ],
+            datasets: [{
+                data: [68, 17, 9, 6],
+                backgroundColor: [
+                    "rgba(15,124,255,1)",
+                    "rgba(24,98,255,1)",
+                    "rgba(98,153,255,1)",
+                    "rgba(191,214,255,1)"
+                ],
+                borderWidth: 0,
+                hoverOffset: 6,
+                cutout: "64%"
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: "#0b1220",
+                    titleColor: "#ffffff",
+                    bodyColor: "#e5e7eb",
+                    borderColor: "#1f2937",
+                    borderWidth: 1,
+                    padding: 8,
+                    cornerRadius: 8
+                }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

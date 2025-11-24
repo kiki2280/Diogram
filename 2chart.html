@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growth Chart Section</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #e5e7eb;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        h2,
+        .h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #014AE5;
+        }
+
+        h3,
+        .h3 {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        h4,
+        .h4 {
+            font-size: 8px;
+            font-weight: 400;
+        }
+
+        h5,
+        .h5 {
+            font-size: 6px;
+            font-weight: 400;
+        }
+
+        .growth-section {
+            width: 608px;
+            height: 360px;
+            background: linear-gradient(90deg, #dbe3e8, #ffffff);
+            border-radius: 18px;
+            padding: 22px 14px;
+            overflow: hidden;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .growth-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .growth-title {
+            color: #111827;
+        }
+
+        .stroke {
+            margin-bottom: -2px;
+        }
+
+        .growth-subtitle {
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .growth-tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: transparent;
+        }
+
+        .legend-and-metrics {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .growth-legend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 8px;
+            color: #6b7280;
+        }
+
+        .dot-actual {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #013199;
+        }
+
+        .growth-metric-box {
+            display: flex;
+            gap: 32px;
+        }
+
+        .metric-item {
+            text-align: right;
+        }
+
+        .metric-number {
+            color: #013199;
+        }
+
+        .metric-sub {
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        
+        .chart-container {
+            width: 100%;
+            height: 170px;
+
+            padding-left: 6px;
+            padding-right: 6px;
+
+            margin-top: 4px;
+            margin-bottom: 4px;
+
+            position: relative;
+        }
+
+        #growthChart {
+            width: calc(100% - 12px) !important;
+            height: 100% !important;
+        }
+
+        canvas {
+            outline: none !important;
+        }
+
+        .bottom-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 8px 7px;
+            border: 1px solid #f1f5f9;
+            border: 0.5px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-title {
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            color: #013199;
+            margin-bottom: 2px;
+        }
+
+        .stat-sub {
+            color: #6b7280;
+        }
+
+        /* ================================
+   MOBILE ADAPTIVE — Variant A
+   ================================ */
+        @media (max-width: 640px) {
+
+        .growth-section {
+            width: 100%;
+            height: auto;
+            padding: 16px 14px;
+            border-radius: 14px;
+        }
+
+        /* Заголовок + кнопка */
+        .growth-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .growth-tag {
+            font-size: 8px;
+            padding: 4px 10px;
+            border-radius: 14px;
+            align-self: flex-end;
+        }
+
+        .svg-icon {
+            width: 8px;
+            height: 8px;
+            margin-bottom: -2px;
+        }
+
+        /* Легенда */
+        .legend-and-metrics {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .growth-legend {
+            gap: 8px;
+            font-size: 7px;
+            order: 1;
+        }
+
+        /* Метрики */
+        .growth-metric-box {
+            width: 100%;
+            justify-content: space-between;
+            margin-top: 5px;
+            margin-bottom: 0;
+            gap: 0;
+            order: 0;
+        }
+
+        .metric-number {
+            font-size: 12px;
+        }
+        .metric-sub {
+            font-size: 7px;
+        }
+
+        /* График контейнер */
+        .chart-container {
+            height: 180px !important;
+            margin-top: 10px;
+        }
+
+        #growthChart {
+            height: 100% !important;
+        }
+
+        /* Нижние карточки */
+        .bottom-stats {
+            grid-template-columns: 1fr;
+            margin-top: 18px;
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .stat-title { font-size: 7px; }
+        .stat-value { font-size: 14px; }
+        .stat-sub   { font-size: 8px; }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="growth-section">
+
+        <div class="growth-header">
+            <div>
+                <p class="growth-title h3">Growth Trajectory</p>
+                <p class="growth-subtitle h4">Organizations onboarded vs. target (Phase 1 & 2)</p>
+            </div>
+            <div class="growth-tag h4">
+                <svg class="stroke" width="10" height="10" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 8L5 5.5L6.8 7.2L10 4" stroke="#111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M10 4V6.5" stroke="#111" stroke-width="1" stroke-linecap="round" />
+                    <path d="M10 4H7.5" stroke="#111" stroke-width="1" stroke-linecap="round" />
+                </svg>
+
+                Exceeding Target</div>
+        </div>
+
+        <div class="legend-and-metrics">
+            <div class="growth-legend">
+                <span class="dot-actual"></span>
+                <span>Actual Growth</span>
+                <span style="font-weight:700;color:#000;">------</span>
+                <span>Target</span>
+            </div>
+
+            <div class="growth-metric-box">
+                <div class="metric-item">
+                    <div class="metric-number h2">892</div>
+                    <div class="metric-sub h4">Total Organizations</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-number h2">+99.1%</div>
+                    <div class="metric-sub h4">vs Target</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="growthChart"></canvas>
+        </div>
+
+        <div class="bottom-stats">
+            <div class="stat-card">
+                <p class="stat-title h4">Phase 1 Achievement</p>
+                <p class="stat-value h2">107.2%</p>
+                <p class="stat-sub h4">267 of 250 target</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-title h4">Phase 2 Progress</p>
+                <p class="stat-value h2">625</p>
+                <p class="stat-sub h4">organizations added</p>
+            </div>
+
+            <div class="stat-card">
+                <p class="stat-title h4">Avg Monthly Growth</p>
+                <p class="stat-value h2">74</p>
+                <p class="stat-sub h4">organizations/month</p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        const canvas = document.getElementById("growthChart");
+        const ctx = canvas.getContext("2d");
+
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const values = [20, 60, 120, 170, 220, 260, 310, 380, 500, 620, 720, 850];
+
+        let hovered = null;
+
+        const basePointRadius = 2.7;
+        const outerHoverRadius = 8;
+        const textGap = 10;
+        const lineH = 10;
+
+        const chart = new Chart(ctx, {
+            type: "scatter",
+            data: {
+                labels: months,
+                datasets: [{
+                    data: values,
+                    pointRadius: basePointRadius,
+                    pointBackgroundColor: "#000",
+                    pointBorderWidth: 0,
+                    showLine: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                layout: { padding: { left: 6, right: 6, top: 0, bottom: 0 } },
+
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
+
+                interaction: { mode: "nearest", intersect: true },
+
+                scales: {
+                    x: {
+                        type: "category",
+                        offset: false,
+                        ticks: { padding: 2, color: "#000", font: { size: 8 } },
+                        grid: { display: false },
+                        border: { display: false }
+                    },
+                    y: {
+                        min: 0,
+                        max: 1000,
+                        ticks: { padding: 2, stepSize: 250, color: "#000", font: { size: 8 } },
+                        grid: { display: false },
+                        border: { display: false }
+                    }
+                },
+
+                onHover(evt, elements) {
+                    hovered = elements.length ? elements[0].index : null;
+                    chart.draw();
+                }
+            },
+
+            plugins: [{
+                id: "hover-plugin",
+                afterDraw(chartInstance) {
+                    if (hovered === null) return;
+
+                    const ctx = chartInstance.ctx;
+                    const CA = chartInstance.chartArea;
+                    const metaPoint = chartInstance.getDatasetMeta(0).data[hovered];
+
+                    const x = metaPoint.x;
+                    const y = metaPoint.y;
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(x, CA.top);
+                    ctx.lineTo(x, CA.bottom);
+                    ctx.strokeStyle = "rgba(0,0,0,0.35)";
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                    ctx.restore();
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(x, y, outerHoverRadius, 0, Math.PI * 2);
+                    ctx.strokeStyle = "#FFF";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.restore();
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(x, y, basePointRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = "#000";
+                    ctx.fill();
+                    ctx.restore();
+
+                    const month = months[hovered];
+                    const actual = "Actual Organizations: " + values[hovered];
+                    const target = "Target: 500";
+
+                    ctx.save();
+                    ctx.fillStyle = "#000";
+
+                    ctx.font = "700 8px Arial";
+                    const w1 = ctx.measureText(month).width;
+
+                    ctx.font = "400 8px Arial";
+                    const w2 = ctx.measureText(actual).width;
+                    const w3 = ctx.measureText(target).width;
+
+                    const maxW = Math.max(w1, w2, w3);
+                    const textBoxHeight = lineH * 3;
+
+                    let textX = x - maxW / 2;
+                    let textYBottom = y - textGap;
+                    let textY = textYBottom - textBoxHeight;
+
+                    const topLimit = CA.top + 4;
+                    if (textY < topLimit) textY = topLimit;
+
+                    if (textX + maxW > CA.right - 2) textX = CA.right - 2 - maxW;
+                    if (textX < CA.left + 2) textX = CA.left + 2;
+
+                    ctx.font = "700 8px Arial";
+                    ctx.fillText(month, textX, textY);
+
+                    ctx.font = "400 8px Arial";
+                    ctx.fillText(actual, textX, textY + lineH);
+                    ctx.fillText(target, textX, textY + lineH * 2);
+
+                    ctx.restore();
+                }
+            }]
+        });
+    </script>
+
+</body>
+
+</html>
